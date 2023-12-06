@@ -89,7 +89,7 @@ The hardware design of USBKeylogger is open-sourced on OSHWHUB:
 
 Here are a brief steps to make your own USBKeylogger:
 
-1. Download the Gerber files for the [Compact Model](https://github.com/Push3AX/USBKeylogger/releases/download/v1.1/Gerber_USBKeylogger_V2.zip) or the [USB Hub Model](https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/Hardware/V2/Gerber_USBKeylogger_v2.zip) of USBKeylogger and send them to a PCB manufacturer for production. There are no special manufacturing requirements for the Compact Model, but for the USB Hub Model, the board thickness of 1.2mm is recommended.
+1. Download the Gerber files for the [Compact Model](https://github.com/Push3AX/USBKeylogger/releases/download/v1.1/Gerber_USBKeylogger_v1.zip) or the [USB Hub Model](https://github.com/Push3AX/USBKeylogger/releases/download/v1.1/Gerber_USBKeylogger_V2.zip) of USBKeylogger and send them to a PCB manufacturer for production. There are no special manufacturing requirements for the Compact Model, but for the USB Hub Model, the board thickness of 1.2mm is recommended.
 2. Download the firmware for the ESP-07S module [here](https://github.com/Push3AX/USBKeylogger/releases/download/v1.1/USBKeylogger.ino_v1.1.zip). Open it with Arduino and flash it onto the ESP-07S module using a programmer.
 3. Refer to the BOM section and solder the components. When installing the Compact Version inside the keyboard, the USB connector can be omitted and instead soldered directly to the internal USB wires of the keyboard.
 4. For the USB Hub Model, you also need to purchase a case, the specifications of which should meet the following requirements:
