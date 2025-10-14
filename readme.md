@@ -40,13 +40,15 @@ Plug the USB Keyboard into the female USB port of the USBKeylogger, then plug th
 
 Connect to the Wi-Fi hotspot of USBKeylogger, navigate to http://192.168.5.1/.
 
-(Default SSID: USBKeylogger, default password: 123453678, can be changed in the Settings page. USBKeylogger can also be configured to connect to an existing Wi-Fi, see the Station Config)
+(Default SSID: USBKeylogger_XXXXXX, default password: 123453678, can be changed in the Settings page. USBKeylogger can also be configured to connect to an existing Wi-Fi, see the Station Config)
 
 <img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/web.jpg" alt="web"/>
 
 
 
 ## Manufacturing Guide
+
+**Warning: A specific batch of CH9350L chips contains a bug. When a button is pressed for 2 seconds, the CH9350 continuously sends the key value to the HOST for over 2 seconds, or even indefinitely, until another button is pressed to interrupt it. This is an inherent bug in the CH9350 chip itself, Please replace the chip batch.**
 
 ### Hardware Design
 
