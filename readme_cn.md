@@ -40,13 +40,15 @@ USBKeylogger共有两种硬件规格。
 
 连接到USBKeylogger的Wi-Fi热点，访问http://192.168.5.1/。
 
-（默认SSID：USBKeylogger，默认密码：123453678，在Settings页面可以修改。也可配置USBKeylogger连接到现有的Wi-Fi，即Station Config）
+（默认SSID：USBKeylogger_XXXXXX，默认密码：123453678，在Settings页面可以修改。也可配置USBKeylogger连接到现有的Wi-Fi，即Station Config）
 
 <img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/web.jpg" alt="web"/>
 
 
 
 ## 制造指南
+
+**警告：部分CH9350L芯片存在Bug，表现为按下某按键2秒，会上发超过2秒，甚至不停的该键值，直到按下另一个键打断。这是CH9350本身的Bug，请更换芯片批次。**
 
 ### 硬件设计
 
