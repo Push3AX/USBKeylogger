@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>USBKeylogger Decryptor</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --text: #18212b;
+      --muted: #687789;
+      --line: #d7e0e8;
+      --accent: #116a63;
+      --accent-dark: #0c514b;
+      --soft: #eaf4f2;
+      --danger: #b42318;
+      --ok: #176b3a;
+      --shadow: 0 10px 28px rgba(24, 33, 43, .08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+    .page {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 22px 14px 34px;
+    }
+    .topbar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .title-line {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .kicker {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+    h1, h2, h3 { margin: 0; line-height: 1.2; }
+    h1 { font-size: 28px; }
+    h2 { font-size: 20px; margin-bottom: 14px; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin: 14px 0;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .field { min-width: 0; }
+    label, .label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .hint {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .desc {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    input[type=text], select, textarea {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--text);
+      padding: 10px 11px;
+      font: inherit;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(17, 106, 99, .14);
+    }
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 44px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 14px;
+      font: inherit;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+    }
+    button:hover { background: var(--accent-dark); }
+    button.secondary {
+      background: #e7edf2;
+      color: var(--text);
+    }
+    button.secondary:hover { background: #dbe4eb; }
+    #status {
+      min-height: 24px;
+      margin-top: 12px;
+      font-weight: 700;
+    }
+    #status.ok { color: var(--ok); }
+    #status.err { color: var(--danger); }
+    .lang-select {
+      flex: 0 0 auto;
+      width: auto;
+      min-width: 0;
+      min-height: 32px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+    }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="title-line">
+        <div>
+          <a href="https://github.com/Push3AX/USBKeylogger" style="text-decoration:none;color:inherit">
+            <p class="kicker">ANT Project</p>
+            <h1 data-i18n="decrypt_title"></h1>
+          </a>
+        </div>
+        <select id="language_select" class="lang-select">
+          <option value="en" data-i18n="english"></option>
+          <option value="zh" data-i18n="chinese"></option>
+          <option value="ru" data-i18n="russian"></option>
+        </select>
+      </div>
+    </header>
+
+    <section class="panel">
+      <h2 data-i18n="input"></h2>
+      <div class="form-grid">
+        <div class="field">
+          <label for="key" data-i18n="aes_key"></label>
+          <input id="key" type="text" autocomplete="off" data-i18n-placeholder="key_placeholder">
+        </div>
+        <div class="field">
+          <label for="payload" data-i18n="encrypted_payload"></label>
+          <textarea id="payload" spellcheck="false" data-i18n-placeholder="payload_placeholder"></textarea>
+        </div>
+      </div>
+      <div class="button-row">
+        <button type="button" id="decryptBtn" data-i18n="decrypt"></button>
+        <button type="button" id="copyBtn" class="secondary" data-i18n="copy_plaintext"></button>
+        <button type="button" id="clearBtn" class="secondary" data-i18n="clear"></button>
+      </div>
+      <div id="status" aria-live="polite"></div>
+    </section>
+
+    <section class="panel">
+      <h2 data-i18n="plaintext"></h2>
+      <textarea id="plaintext" spellcheck="false" readonly></textarea>
+    </section>
+  </main>
+
+  <script>
+    var I18N = {
+      en: {
+        decrypt_title: 'USBKeylogger Decryptor',
+        input: 'Input',
+        aes_key: 'AES Key',
+        key_placeholder: 'Paste the AES Key from the device',
+        encrypted_payload: 'Encrypted Payload',
+        payload_placeholder: 'Paste AES128CBC:<Base64> or raw Base64 ciphertext',
+        decrypt: 'Decrypt',
+        copy_plaintext: 'Copy Plaintext',
+        clear: 'Clear',
+        plaintext: 'Plaintext',
+        decrypt_ok: 'Decryption successful.',
+        copied: 'Plaintext copied.',
+        err_no_key: 'Please enter the AES Key.',
+        err_no_payload: 'Please enter the ciphertext.',
+        err_key_format: 'AES Key must be exactly 32 hex characters (from the device settings page).',
+        err_payload_length: 'Ciphertext length is invalid.',
+        err_decrypt_fail: 'Decryption failed. Check that the key matches the device.',
+        english: 'English',
+        chinese: 'Chinese',
+        russian: 'Russian'
+      },
+      zh: {
+        decrypt_title: 'USBKeylogger解密工具',
+        input: '输入',
+        aes_key: 'AES 密钥',
+        key_placeholder: '粘贴后台配置里的 AES Key',
+        encrypted_payload: '密文',
+        payload_placeholder: '粘贴 AES128CBC:<Base64> 或纯 Base64 密文',
+        decrypt: '解密',
+        copy_plaintext: '复制明文',
+        clear: '清除',
+        plaintext: '明文',
+        decrypt_ok: '解密成功。',
+        copied: '已复制明文。',
+        err_no_key: '请输入 AES Key。',
+        err_no_payload: '请输入密文。',
+        err_key_format: 'AES Key 必须是 32 位十六进制字符（来自设置页面的密钥）。',
+        err_payload_length: '密文长度不正确。',
+        err_decrypt_fail: '解密失败，请确认密钥与设备一致。',
+        english: '英文',
+        chinese: '中文',
+        russian: '俄文'
+      },
+      ru: {
+        decrypt_title: 'Расшифровка данных',
+        input: 'Ввод',
+        aes_key: 'Ключ AES',
+        key_placeholder: 'Вставьте ключ AES из настроек устройства',
+        encrypted_payload: 'Зашифрованные данные',
+        payload_placeholder: 'Вставьте AES128CBC:<Base64> или чистый Base64',
+        decrypt: 'Расшифровать',
+        copy_plaintext: 'Копировать текст',
+        clear: 'Очистить',
+        plaintext: 'Расшифрованный текст',
+        decrypt_ok: 'Расшифровка выполнена.',
+        copied: 'Текст скопирован.',
+        err_no_key: 'Введите ключ AES.',
+        err_no_payload: 'Введите зашифрованные данные.',
+        err_key_format: 'Ключ AES должен содержать ровно 32 шестнадцатеричных символа (из настроек устройства).',
+        err_payload_length: 'Неверная длина шифротекста.',
+        err_decrypt_fail: 'Ошибка расшифровки. Проверьте соответствие ключа.',
+        english: 'Английский',
+        chinese: 'Китайский',
+        russian: 'Русский'
+      }
+    };
+
+    function getLang() {
+      return localStorage.getItem('uk_lang') || 'en';
+    }
+    function getDict() {
+      var lang = getLang();
+      return I18N[lang] || I18N.en;
+    }
+    function t(key) {
+      var d = getDict();
+      return d[key] || key;
+    }
+    function applyLang() {
+      var lang = getLang();
+      var dict = I18N[lang] || I18N.en;
+      document.documentElement.lang = lang;
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var key = el.getAttribute('data-i18n');
+        if (dict[key]) el.textContent = dict[key];
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+        var key = el.getAttribute('data-i18n-placeholder');
+        if (dict[key]) el.placeholder = dict[key];
+      });
+      var sel = document.getElementById('language_select');
+      if (sel) sel.value = lang;
+    }
+    function setLang(lang) {
+      if (!I18N[lang]) lang = 'en';
+      localStorage.setItem('uk_lang', lang);
+      applyLang();
+    }
+
+    /* ── Crypto helpers ── */
+    var prefix = "AES128CBC:";
+    var keyEl = document.getElementById("key");
+    var payloadEl = document.getElementById("payload");
+    var plaintextEl = document.getElementById("plaintext");
+    var statusEl = document.getElementById("status");
+
+    function setStatus(message, type) {
+      statusEl.textContent = message;
+      statusEl.className = type || "";
+    }
+
+    function base64ToBytes(text) {
+      var clean = text.replace(/\s+/g, "");
+      var binary = atob(clean);
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return bytes;
+    }
+
+    function hexToBytes(hex) {
+      if (!/^[0-9a-fA-F]{32}$/.test(hex)) {
+        throw new Error(t('err_key_format'));
+      }
+      var bytes = new Uint8Array(16);
+      for (var i = 0; i < 16; i++) {
+        bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16);
+      }
+      return bytes;
+    }
+
+    function deriveAesKey(keyText) {
+      var rawKey = hexToBytes(keyText);
+      return crypto.subtle.importKey("raw", rawKey, { name: "AES-CBC" }, false, ["decrypt"]);
+    }
+
+    function decryptPayload() {
+      setStatus("", "");
+      plaintextEl.value = "";
+
+      var keyText = keyEl.value.trim();
+      if (!keyText) throw new Error(t('err_no_key'));
+
+      var payload = payloadEl.value.trim();
+      if (!payload) throw new Error(t('err_no_payload'));
+      if (payload.indexOf(prefix) === 0) payload = payload.slice(prefix.length);
+
+      var blob = base64ToBytes(payload);
+      if (blob.length < 32 || (blob.length - 16) % 16 !== 0) {
+        throw new Error(t('err_payload_length'));
+      }
+
+      var iv = blob.slice(0, 16);
+      var ciphertext = blob.slice(16);
+      return deriveAesKey(keyText).then(function(aesKey) {
+        return crypto.subtle.decrypt({ name: "AES-CBC", iv: iv }, aesKey, ciphertext);
+      }).then(function(plainBuffer) {
+        plaintextEl.value = new TextDecoder("utf-8", { fatal: false }).decode(plainBuffer);
+        setStatus(t('decrypt_ok'), "ok");
+      });
+    }
+
+    document.getElementById("decryptBtn").addEventListener("click", function() {
+      try {
+        decryptPayload().catch(function(err) {
+          setStatus(err.message || t('err_decrypt_fail'), "err");
+        });
+      } catch (err) {
+        setStatus(err.message || String(err), "err");
+      }
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", function() {
+      if (!plaintextEl.value) return;
+      try {
+        navigator.clipboard.writeText(plaintextEl.value).then(function() {
+          setStatus(t('copied'), "ok");
+        });
+      } catch (e) {
+        plaintextEl.select();
+        document.execCommand("copy");
+        setStatus(t('copied'), "ok");
+      }
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", function() {
+      payloadEl.value = "";
+      plaintextEl.value = "";
+      setStatus("", "");
+    });
+
+    document.getElementById("language_select").addEventListener("change", function() {
+      setLang(this.value);
+    });
+
+    applyLang();
+  </script>
+</body>
+</html>
