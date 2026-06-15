@@ -17,7 +17,7 @@ Hardware-Based Keylogger.
 - Supports automatic scanning of nearby open Wi-Fi networks for internet access.
 - Multilingual interface (English / 中文 / Русский).
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/1.jpg" alt="1" style="zoom: 50%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/1.jpg" alt="1" width="480" />
 
 ------
 
@@ -29,11 +29,11 @@ USBKeylogger is available in two hardware specifications:
 
 1. Compact Model: Smaller in size, can be installed inside the keyboard (Example [here](https://github.com/ffffffff0x/1earn/blob/master/1earn/Security/IOT/硬件安全/HID/HID-KeyboardLogger.md)).
 
-   <img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/V1.png" alt="V1"/> 
+   <img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/V1.png" alt="V1" width="520" />
 
 2. USB Hub Model: Built into a USB Hub (only the bottom port has keyboard logging functionality).
 
-   <img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/V2.png" alt="V2"/> 
+   <img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/V2.png" alt="V2" width="520" />
 
 ------
 
@@ -43,14 +43,14 @@ USBKeylogger is available in two hardware specifications:
 
 Plug the USB Keyboard into the female USB port of the USBKeylogger, then plug the USBKeylogger into the computer.
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/1.jpg" alt="1" style="zoom: 50%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/1.jpg" alt="1" width="480" />
 
 Connect to the Wi-Fi hotspot of USBKeylogger, navigate to http://192.168.5.1/.
 
 - Default SSID: `USBKeylogger_XXXXXX` (last 6 digits of MAC address), default password: `12345678`
 - After logging in, it is strongly recommended to change both the hotspot password and the web interface password.
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/Homepage.png" alt="Homepage" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/Homepage.png" alt="Homepage" width="360" />
 
 ### View Keylogs
 
@@ -58,7 +58,7 @@ Click "View Keylog" on the home page to view online, or "Download Keylog" to sav
 
 Each boot is marked in the keylog. If internet is available, the boot time is also recorded via NTP.
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/keylog.PNG" alt="Keylog"  />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/keylog.PNG" alt="Keylog" width="520" />
 
 ### Configure Auto-Push
 
@@ -68,7 +68,7 @@ Once USBKeylogger is connected to a Wi-Fi network with internet access, it can a
 
 Go to **Settings → General**, fill in your router's SSID and password under "Connect to Wi-Fi Router", save and reboot. The device will maintain both the AP hotspot and the STA connection simultaneously.
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/settings.png" alt="Settings" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/settings.png" alt="Settings" width="360" />
 
 #### Step 2: Configure Push
 
@@ -86,7 +86,7 @@ Go to **Settings → Keylog Push** and select a push mode. ntfy.sh is recommende
 
 5. Click "Test Send" to verify the push channel is working.
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/pushSettings.png" alt="Push Settings" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/pushSettings.png" alt="Push Settings" width="360" />
 
 > **Note**: The public ntfy.sh server retains push messages for only **3 hours**. It is recommended to [self-host an ntfy server](https://docs.ntfy.sh/install/) and update the server address accordingly.
 
@@ -97,13 +97,13 @@ The push schedule controls when keylogs are sent. Boot push and scheduled push a
 1. Boot Push: After each boot and Wi-Fi connection, the full keylog history is pushed immediately. Enabled by default.
 2. Scheduled Push: While the device is running, the full keylog history is pushed at the configured interval (10–71,580 minutes). Suitable for devices that run for extended periods without rebooting.
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/timeSettings.png" alt="Time Settings" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/timeSettings.png" alt="Time Settings" width="360" />
 
 #### Step 4: Decrypt the Data
 
 Visit the generated ntfy.sh subscription link and download the attachment. The content is encrypted ciphertext in the format `AES128CBC:<Base64>`.
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/ntfy.sh.png" alt="ntfy.sh" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/ntfy.sh.png" alt="ntfy.sh" width="360" />
 
  Use the included **`KeylogDecrpyt.html`** to decrypt it locally in your browser.
 
@@ -112,7 +112,7 @@ Visit the generated ntfy.sh subscription link and download the attachment. The c
 3. Paste the encrypted content into the "Encrypted Payload" field
 4. Click "Decrypt" — the plaintext keylog will appear below
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/decrypt.png" alt="Decrypt" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/decrypt.png" alt="Decrypt" width="360" />
 
 ### Open Hotspot Auto-Scan
 
@@ -183,7 +183,7 @@ Here are a brief steps to make your own USBKeylogger:
 3. Refer to the BOM section and solder the components. When installing the Compact Version inside the keyboard, the USB connector can be omitted and instead soldered directly to the internal USB wires of the keyboard.
 4. For the USB Hub Model, you also need to purchase a case, the specifications of which should meet the following requirements:
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/case.png" alt="case" style="zoom: 67%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/case.png" alt="case" width="480" />
 
 ### Arduino Build Settings
 

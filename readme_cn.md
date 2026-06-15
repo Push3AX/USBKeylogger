@@ -17,7 +17,7 @@
 - 内置 3MB Flash 存储，写满自动循环写入
 - 多国语言支持（English / 中文 / Русский）
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/1.jpg" alt="1" style="zoom: 50%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/1.jpg" alt="1" width="480" />
 
 ------
 
@@ -29,11 +29,11 @@ USBKeylogger 共有两种硬件规格。
 
 1. 小型版本：体积较小，可安装在键盘内部（[此处](https://github.com/ffffffff0x/1earn/blob/master/1earn/Security/IOT/%E7%A1%AC%E4%BB%B6%E5%AE%89%E5%85%A8/HID/HID-KeyboardLogger.md)有案例）。
 
-   <img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/V1.png" alt="V1"/> 
+   <img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/V1.png" alt="V1" width="520" />
 
 2. USB Hub 版本：内置在 USB Hub 中（仅有最下方接口有键盘记录功能）。
 
-   <img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/V2.png" alt="V2"/> 
+   <img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/V2.png" alt="V2" width="520" />
 
 ------
 
@@ -43,14 +43,14 @@ USBKeylogger 共有两种硬件规格。
 
 将 USB 键盘插入 USBKeylogger，然后将 USBKeylogger 插入电脑。
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/1.jpg" alt="1" style="zoom: 50%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/1.jpg" alt="1" width="480" />
 
 连接到 USBKeylogger 的 Wi-Fi 热点，访问 http://192.168.5.1/。
 
 - 默认 SSID：`USBKeylogger_XXXXXX`（MAC 地址后6位），默认密码：`12345678`
 - 登陆后请务必修改热点密码和管理页面密码。
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/Homepage.png" alt="Homepage" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/Homepage.png" alt="Homepage" width="360" />
 
 ### 查看键盘记录
 
@@ -58,7 +58,7 @@ USBKeylogger 共有两种硬件规格。
 
 每次启动，日志中会记录一个boot标记。若已连接互联网，还会通过NTP记录启动时间。
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/keylog.PNG" alt="Keylog"  />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/keylog.PNG" alt="Keylog" width="520" />
 
 ### 配置自动推送
 
@@ -68,7 +68,7 @@ USBKeylogger连接到有互联网的 Wi-Fi 网络后，可将键盘记录自动�
 
 进入**设置 → 通用**，在「连接到 Wi-Fi 路由器」中填写路由器的 SSID 和密码，保存后重启。设备将同时开启 AP 热点和 STA 连接。
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/settings.png" alt="Settings" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/settings.png" alt="Settings" width="360" />
 
 #### 第二步：配置推送
 
@@ -86,7 +86,7 @@ USBKeylogger连接到有互联网的 Wi-Fi 网络后，可将键盘记录自动�
 
 5. 配置完成后点击「测试发送」，验证推送通道是否正常。
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/pushSettings.png" alt="Push Settings" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/pushSettings.png" alt="Push Settings" width="360" />
 
 > **注意**：ntfy.sh 公共服务器的推送消息仅保存 **3小时**，建议[自建 ntfy 服务器](https://docs.ntfy.sh/install/)并将服务器地址改为自建地址。
 
@@ -97,13 +97,13 @@ USBKeylogger连接到有互联网的 Wi-Fi 网络后，可将键盘记录自动�
 1. 开机推送：设备每次启动并连接 Wi-Fi 后，将完整键盘记录推送。默认开启。
 2. 定时推送：设备运行期间，按设定的间隔（10–71580 分钟）定期将完整键盘记录历史推送一次。适合长期不重启的设备。
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/timeSettings.png" alt="Time Settings" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/timeSettings.png" alt="Time Settings" width="360" />
 
 #### 第四步：解密数据
 
 访问生成的ntfy.sh订阅链接，下载附件。附件中的内容均为加密密文，格式为 `AES128CBC:<Base64>`。
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/ntfy.sh.png" alt="ntfy.sh" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/ntfy.sh.png" alt="ntfy.sh" width="360" />
 
 使用项目中的 **`KeylogDecrpyt.html`** 在本地浏览器解密。
 
@@ -112,7 +112,7 @@ USBKeylogger连接到有互联网的 Wi-Fi 网络后，可将键盘记录自动�
 3. 将收到的加密内容粘贴到「加密载荷」栏
 4. 点击「解密」，明文键盘记录将显示在下方
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/decrypt.png" alt="Decrypt" style="zoom:33%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/decrypt.png" alt="Decrypt" width="360" />
 
 ### 自动遍历开放热点
 
@@ -183,7 +183,7 @@ USBKeylogger 的硬件设计开源在 OSHWHub，请移步至：
 3. 参照 BOM 章节，焊接各个元器件。将小型版本安装在键盘外壳中时，可以不焊接 USB 接头，而是直接焊接到键盘内部的 USB 线上（[此处](https://github.com/ffffffff0x/1earn/blob/master/1earn/Security/IOT/%E7%A1%AC%E4%BB%B6%E5%AE%89%E5%85%A8/HID/HID-KeyboardLogger.md)有案例）。
 4. USB Hub 版本还需购买外壳，规格应满足如下要求：
 
-<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/case.png" alt="case" style="zoom: 67%;" />
+<img src="https://raw.githubusercontent.com/Push3AX/USBKeylogger/main/images/case.png" alt="case" width="480" />
 
 ### Arduino 编译设置
 
